@@ -23,9 +23,17 @@ impl RedditSubreddit {
         limit: u32,
     ) -> Result<String, ()> {
         let url: String = build_subreddit_url_by_index(subreddit, index);
-        let url_with_options: String = add_query_config_options(url, frequency, limit);
+        let url_with_options: Option<String> = if !frequency.is_empty() || !frequency.is_empty() {
+            Some(add_query_config_options(url, frequency, limit))
+        } else {
+            None
+        };
 
-        let result = self.client.get(url_with_options).send().await?;
+        let result = if let Some(url) = url_with_options {
+            self.client.get(url_with_options).send().await?
+        } else {
+            None
+        };
 
         println!("{:?}", result);
 
